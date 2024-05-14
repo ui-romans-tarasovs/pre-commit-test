@@ -15,10 +15,25 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.9'
+    
+    - name: Create virtual environment
+      run: python -m venv venv 
+
     - name: Install dependencies
       env:
         PIP_CACHE_DIR: /github/home/.pip-cache
       run: |
-        python -m pip install --upgrade pip
+        ./venv/bin/python -m pip install --upgrade pip
 
-    - uses: cloudposse/github-action-pre-commit@v2.1.2
+    - name: Install pre-commit
+      run: |
+        ./venv/bin/python -m pip install pre-commit 
+        ./venv/bin/pre-commit --version 
+
+    - name: Configure safe directory for Git
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE 
+
+    - name: Run pre-commit
+      run: |
+        cd $GITHUB_WORKSPACE
+        ./venv/bin/pre-commit run --all-files
