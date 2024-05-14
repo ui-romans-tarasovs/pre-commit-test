@@ -4,20 +4,18 @@ on: [push]
 
 jobs:
   run-precommit:
-    runs-on: ubuntu-latest
+    runs-on: [ecs-hosted]
     container:
-      image: ubuntu:22.04
+      image: python:3.9
     steps:
-    - uses: actions/checkout@v2
-    - name: Install system dependencies
-      run: apt-get update && apt-get install -y libsqlite3-dev
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    #download pre-commit zipapp 
+    - uses: actions/cache@v4
       with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt # Adjust path as necessary
-          
-    - uses: cloudposse/github-action-pre-commit@v2.1.2
+        path: ~/.cache/pre-commit
+        key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+    - uses: pre-commit/action@v3.0.1
+      with:
+        extra_args: flake8 --all-files
+    - run: ls -lah
+      shell: bash
