@@ -1,0 +1,18 @@
+name: pre-commit
+
+on: [push]
+
+jobs:
+  run-precommit:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install system dependencies
+      run: apt-get update && apt-get install -y libsqlite3-dev
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - uses: cloudposse/github-action-pre-commit@v2.1.2
